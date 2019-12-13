@@ -24,4 +24,6 @@ client.on('message', (message) => {
   }
 });
 
-client.login(discordToken);
+client.login(discordToken).catch((err) => {
+  console.log(`Login error: ${err}`);
+});

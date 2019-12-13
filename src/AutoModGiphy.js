@@ -8,7 +8,7 @@ const moduleCommandPrefix = '!automod giphy ';
 const commandPrefixChangeTime = 'time ';
 
 /**
- * Automatically schedules giphy and tenor links for deletion
+ * Automatically schedules giphy, tenor, and gfycat links for deletion
  * after a given time period.
  * @param {Message} message The message to process
  * @return {boolean}  If this module consumed the message
@@ -45,12 +45,12 @@ export default function processMessage(message) {
 }
 
 /**
- * Determines if the message contains a giphy or tenor link
+ * Determines if the message contains a giphy link
  * @param {Message} message The message to parse
  * @return {boolean} Whether the message contains a giphy or tenor link
  */
 function containsGiphyLink(message) {
-  const pattern = /https?:\/\/(\w+\.)?(tenor|giphy)\.com\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
+  const pattern = /https?:\/\/(\w+\.)?(tenor|giphy|gfycat)\.com\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
   if (message.content.search(pattern) != -1) {
     return true;
   }
