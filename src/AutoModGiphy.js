@@ -34,6 +34,42 @@ export default function processMessage(message) {
     }
   }
 
+  if (enabled.has(message.channel.id) && !message.author.bot) {
+    if (containsGiphyLink(message)) {
+      removeMessageEventually(message, enabled.get(message.channel.id));
+    }
+  }
+
 
   return false;
+}
+
+/**
+ * Determines if the message contains a giphy or tenor link
+ * @param {Message} message The message to parse
+ * @return {boolean} Whether the message contains a giphy or tenor link
+ */
+function containsGiphyLink(message) {
+  const pattern = /https?:\/\/(\w+\.)?(tenor|giphy)\.com\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
+  if (message.content.search(pattern) != -1) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Post a notification and remove the link after the set time period
+ * @param {Message} message The message to remove
+ * @param {number} timeout The number of milliseconds to wait
+ */
+function removeMessageEventually(message, timeout) {
+  const notification = message.reply('Giphy and Tenor links will be removed after a set time period.');
+  setTimeout(() => {
+    message.delete().then(() => {
+      notification.then((msg) => {
+        msg.edit('A giphy/tenor link was here, but it was removed by AutoMod.');
+      });
+    });
+  }, timeout);
 }
