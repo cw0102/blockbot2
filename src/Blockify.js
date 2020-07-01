@@ -3,6 +3,10 @@ import {Message} from 'discord.js';
 
 const enabled = new Set();
 
+const kAutoBlockifyOn = '!autoblockify on';
+const kAutoBlockifyOff = '!autoblockify off';
+const kSingleMessage = '!blockify ';
+
 /**
  * Performs blockify commands to turn on/off blockify and blockifys messages
  * when the module is enabled.
@@ -11,13 +15,13 @@ const enabled = new Set();
  */
 export default function processMessage(message) {
   if (adminIds.includes(message.author.id)) {
-    if (message.content == '!blockify') {
+    if (message.content == kAutoBlockifyOn) {
       enabled.add(message.channel.id);
       message.delete().then((msg) => {
         msg.channel.send(blockify('Blocked'));
       });
       return true;
-    } else if (message.content == '!unblockify') {
+    } else if (message.content == kAutoBlockifyOff) {
       enabled.delete(message.channel.id);
       message.delete().then((msg) => {
         msg.channel.send(blockify('Unblocked'));
@@ -26,9 +30,17 @@ export default function processMessage(message) {
     }
   }
 
-  if (enabled.has(message.channel.id) && !message.author.bot) {
+  // ignore other bot messages
+  if (message.author.bot) {
+    return false;
+  }
+
+  const processSingleMessage = message.content.startsWith(kSingleMessage);
+
+  if (enabled.has(message.channel.id) || processSingleMessage) {
     message.delete().then((msg) => {
-      const newMessage = `${msg.author}: ${blockify(msg.content)}`;
+      const newMessage = `${msg.author}: ${processSingleMessage ?
+        blockify(msg.content.slice(kSingleMessage.length)) : blockify(msg.content)}`;
       message.channel.send(newMessage);
     }).catch(console.error);
     return true;
