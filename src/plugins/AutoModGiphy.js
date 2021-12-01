@@ -1,4 +1,4 @@
-import {adminIds} from './config.json';
+import {adminIds} from '../config.json';
 import {Message} from 'discord.js';
 
 const enabled = new Map();

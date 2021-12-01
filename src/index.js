@@ -1,14 +1,16 @@
 import {Client} from 'discord.js';
 import {discordToken} from './config.json';
-import BlockifyModule from './Blockify.js';
-import AutoModGiphyModule from './AutoModGiphy.js';
+
+import BlockifyModule from './plugins/Blockify.js';
+import AutoModGiphyModule from './plugins/AutoModGiphy.js';
+import Whendwalker from './plugins/Whendwalker.js';
 
 const client = new Client();
 
 // Each module exports a function that consumes messages for the module.
 // The function will return true if it consumed the message and processing
 // should stop.
-const modules = [BlockifyModule, AutoModGiphyModule];
+const modules = [BlockifyModule, AutoModGiphyModule, Whendwalker];
 
 client.once('ready', () => {
   console.log('Ready!');
