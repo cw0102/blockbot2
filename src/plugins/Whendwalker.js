@@ -1,6 +1,7 @@
 import {Message} from 'discord.js';
 
 const kWhendwalker = '!whendwalker';
+const kWhenLegend = '!whenlegendtitle';
 
 /**
  * Post the time until endwalker launch
@@ -10,6 +11,10 @@ const kWhendwalker = '!whendwalker';
 export default function processMessage(message) {
   if (message.content === kWhendwalker) {
     message.channel.send(timeStringUntilEndwalker());
+    return true;
+  } else if (message.content === kWhenLegend) {
+    message.channel.send('Just a few more pulls...');
+    return true;
   }
 
   return false;

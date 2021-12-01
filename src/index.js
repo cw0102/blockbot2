@@ -18,9 +18,9 @@ client.once('ready', () => {
 });
 
 client.on('message', (message) => {
-  console.log(`[${message.channel.guild.name}#${message.channel.name}] ${message.author.username}#${message.author.discriminator} (${message.author.id}): ${message.toString()}`);
   for (const runModule of modules) {
     if (runModule(message)) {
+      console.log(`[${message.channel.guild.name}#${message.channel.name}] ${message.author.username}#${message.author.discriminator} (${message.author.id}): ${message.toString()}`);
       break;
     }
   }
