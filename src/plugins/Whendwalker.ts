@@ -1,4 +1,5 @@
-import {Message} from 'discord.js';
+import { Message } from 'discord.js';
+import { MessageProcessor } from '../types/MessageProcessor';
 
 const kWhendwalker = '!whendwalker';
 const kWhenLegend = '!whenlegendtitle';
@@ -8,7 +9,7 @@ const kWhenLegend = '!whenlegendtitle';
  * @param {Message} message The current message to process
  * @return {boolean} If this module consumed the message
  */
-export default function processMessage(message) {
+const processMessage: MessageProcessor = (message: Message): boolean => {
   if (message.content === kWhendwalker) {
     message.channel.send(timeStringUntilEndwalker());
     return true;
@@ -20,6 +21,8 @@ export default function processMessage(message) {
   return false;
 }
 
+export default processMessage;
+
 const kSecondInMs = 1000;
 const kMinuteInMs = kSecondInMs * 60;
 const kHourInMs = kMinuteInMs * 60;
@@ -29,8 +32,11 @@ const kDayInMs = kHourInMs * 24;
  * Gets the time until Endwalker release
  * @return {string} A list of time until endwalker.
  */
-function timeStringUntilEndwalker() {
-  let result = new Date('2021-12-03T01:00:00.000-08:00') - Date.now();
+function timeStringUntilEndwalker(): string {
+  let result = new Date('2021-12-03T01:00:00.000-08:00').valueOf() - Date.now();
+  if (result < 0) {
+    return 'Endwalker is out!';
+  }
   const days = Math.floor(result / kDayInMs);
   result = result % kDayInMs;
   const hours = Math.floor(result / kHourInMs);

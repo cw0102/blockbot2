@@ -1,5 +1,6 @@
-import {adminIds} from '../config.json';
-import {Message} from 'discord.js';
+import { Message } from 'discord.js';
+import { MessageProcessor } from '../types/MessageProcessor';
+import { ModuleConfig } from '../types/Config';
 
 const enabled = new Set();
 
@@ -11,10 +12,11 @@ const kSingleMessage = '!blockify ';
  * Performs blockify commands to turn on/off blockify and blockifys messages
  * when the module is enabled.
  * @param {Message} message The current message to process
+ * @param {ModuleConfig} config The bot configuration
  * @return {boolean} If this module consumed the message
  */
-export default function processMessage(message) {
-  if (adminIds.includes(message.author.id)) {
+const processMessage: MessageProcessor = (message: Message, config: ModuleConfig): boolean => {
+  if (config.adminIds.includes(message.author.id)) {
     if (message.content == kAutoBlockifyOn) {
       enabled.add(message.channel.id);
       message.delete().then((msg) => {
@@ -49,6 +51,8 @@ export default function processMessage(message) {
   return false;
 }
 
+export default processMessage;
+
 /**
  * Checks if the characters following `str[position]` are equal to `nextChars`
  * @param {string} str The string to search
@@ -56,7 +60,7 @@ export default function processMessage(message) {
  * @param {string} nextChars The characters to search for
  * @return {boolean} Whether the text matches
  */
-function nextCharactersAre(str, position, nextChars) {
+function nextCharactersAre(str: string, position: number, nextChars: string): boolean {
   return str.slice(position, (position + nextChars.length)) == nextChars;
 }
 
@@ -65,7 +69,7 @@ function nextCharactersAre(str, position, nextChars) {
  * @param {string} str The string to test
  * @return {boolean} Whether the string is entirely ASCII alphabet characters
  */
-function isAlpha(str) {
+function isAlpha(str: string): boolean {
   return /^[A-Z]$/i.test(str);
 }
 
@@ -73,10 +77,10 @@ function isAlpha(str) {
  * Determines if `pattern` starts at `pos` in a given `str`
  * @param {string} str The string to parse from
  * @param {number} pos The position of the string to start at
- * @param {RegExp} pattern The regex pattern to match
+ * @param {string} pattern The regex pattern to match
  * @return {string} The match if it exists, else null
  */
-function findNextPattern(str, pos, pattern) {
+function findNextPattern(str: string, pos: number, pattern: string): string {
   const regExPattern = RegExp(`^${pattern}`);
   const result = regExPattern.exec(str.slice(pos));
   if (result == null) {
@@ -91,7 +95,7 @@ function findNextPattern(str, pos, pattern) {
  * @param {number} pos The position of the string to start at
  * @return {string} The full discord ID (or null if it is not a valid ID)
  */
-function getDiscordID(str, pos) {
+function getDiscordID(str: string, pos: number): string {
   return findNextPattern(str, pos, '<@[\\d]+>');
 }
 
@@ -101,7 +105,7 @@ function getDiscordID(str, pos) {
  * @param {number} pos The position of the string to start at
  * @return {string} The full emoji id (or null if it is not a valid ID)
  */
-function getDiscordEmoji(str, pos) {
+function getDiscordEmoji(str: string, pos: number): string {
   return findNextPattern(str, pos, '<:[\\w~]+:[\\d]+>');
 }
 
@@ -112,7 +116,7 @@ function getDiscordEmoji(str, pos) {
  * @param {number} pos The position of the string to start at
  * @return {string} The emoji
  */
-function getEmoji(str, pos) {
+function getEmoji(str: string, pos: number): string {
   return findNextPattern(str, pos, '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c\ude32-\ude3a]|[\ud83c\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])');
 }
 
@@ -121,10 +125,10 @@ function getEmoji(str, pos) {
  * @param {*} text The text to blockify
  * @return {string} The blockified string
  */
-function blockify(text) {
+function blockify(text: any): string {
   let out = '';
   let skip = 0;
-  for (let pos=0; pos < text.length; pos++) {
+  for (let pos = 0; pos < text.length; pos++) {
     if (skip > 0) {
       pos += skip - 1;
       skip = 0;
@@ -231,20 +235,20 @@ function blockify(text) {
           out += ':exclamation:';
           break;
         default:
-        {
-          const emoji = getEmoji(text, pos);
-          if (emoji != null) {
-            out += emoji;
-            skip = emoji.length;
-          } else {
-            out += char;
+          {
+            const emoji = getEmoji(text, pos);
+            if (emoji != null) {
+              out += emoji;
+              skip = emoji.length;
+            } else {
+              out += char;
+            }
           }
-        }
       }
     }
 
     out += ' ';
   }
 
-  return out.slice(0, out.length-1);
+  return out.slice(0, out.length - 1);
 }
