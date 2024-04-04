@@ -1,4 +1,9 @@
 import type { Message } from "discord.js";
-import type { ModuleConfig } from "./Config";
+import type { Config } from "./Config";
 
-export type MessageProcessor = (message: Message, config: ModuleConfig) => boolean;
+export type MessageProcessor = (data: MessageProcessorPayload) => boolean;
+
+export interface MessageProcessorPayload {
+  message: Message;
+  config: Config;
+}

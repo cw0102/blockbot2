@@ -1,13 +1,13 @@
-export interface Config {
-    /**
-     * Discord Bot Admin User IDs
-     */
-    adminIds: Array<string>;
+export interface FullConfig {
+  /**
+   * Discord Bot Admin User IDs
+   */
+  adminIds: Array<string>;
 
-    /**
-     * The Discord bot token
-     */
-    discordToken: string;
+  /**
+   * The Discord bot token
+   */
+  discordToken: string;
 }
 
-export type ModuleConfig = Omit<Config, "discordToken">;
+export type Config = Omit<FullConfig, "discordToken">;
