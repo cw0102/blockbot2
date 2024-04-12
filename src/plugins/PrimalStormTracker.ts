@@ -1,4 +1,4 @@
-import { DMChannel, GroupDMChannel, TextChannel } from "discord.js";
+import { GuildTextBasedChannel } from "discord.js";
 import {
   MessageProcessor,
   MessageProcessorPayload,
@@ -8,7 +8,7 @@ import schedule from "node-schedule";
 const kNotifyPrimalStormOn = "!primalstorm on";
 const kNotifyPrimalStormOff = "!primalstorm off";
 
-const enabled = new Map<string, TextChannel | DMChannel | GroupDMChannel>();
+const enabled = new Map<string, GuildTextBasedChannel>();
 
 /**
  * Post messages when Primal Storms rotate

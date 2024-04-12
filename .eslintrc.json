@@ -2,7 +2,7 @@
     "extends": "google",
     "parserOptions": {
         "sourceType": "module",
-        "ecmaVersion": 2019,
+        "ecmaVersion": 2023,
         "ecmaFeatures": {
             "impliedStrict": true
         }
@@ -14,5 +14,6 @@
     "env": {
         "node": true,
         "jest": true
-    }
+    },
+    "plugins": ["unused-imports"]
 }
