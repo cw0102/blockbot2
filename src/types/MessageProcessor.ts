@@ -4,6 +4,6 @@ import type { Config } from "./Config";
 export type MessageProcessor = (data: MessageProcessorPayload) => boolean;
 
 export interface MessageProcessorPayload {
-  message: Message<true>;
+  message: Message;
   config: Config;
 }

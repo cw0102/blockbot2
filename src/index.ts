@@ -6,12 +6,9 @@ import {
   TextChannel,
 } from "discord.js";
 
-import BlockifyModule from "./plugins/Blockify";
-import AutoModGiphyModule from "./plugins/AutoModGiphy";
-import Whendwalker from "./plugins/Whendwalker";
+import * as Plugins from "./plugins";
 import type { MessageProcessor } from "./types/MessageProcessor";
 import { loadConfig } from "./config";
-import PrimalStormTracker from "./plugins/PrimalStormTracker";
 
 const { discordToken, ...config } = loadConfig();
 
@@ -19,10 +16,10 @@ const { discordToken, ...config } = loadConfig();
 // The function will return true if it consumed the message and processing
 // should stop.
 const modules: MessageProcessor[] = [
-  BlockifyModule,
-  AutoModGiphyModule,
-  Whendwalker,
-  PrimalStormTracker,
+  Plugins.Blockify,
+  Plugins.AutoModGiphy,
+  Plugins.Whendwalker,
+  Plugins.PrimalStormTracker,
 ];
 
 const client = new Client({
@@ -34,12 +31,12 @@ const client = new Client({
 });
 
 client
-  .once("ready", () => {
+  .once(Events.ClientReady, () => {
     console.log("Ready!");
     console.log(`Loaded ${modules.length} modules`);
   })
 
-  .on(Events.MessageCreate, (message: Message<true>) => {
+  .on(Events.MessageCreate, (message: Message) => {
     for (const runModule of modules) {
       if (runModule({ message, config })) {
         const channelTag = !(message.channel instanceof TextChannel)
