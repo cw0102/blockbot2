@@ -1,13 +1,14 @@
 {
+  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-      // Ensure that .d.ts files are created by tsc, but not .js files
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      // Ensure that Babel can safely transpile files in the TypeScript project
-      "isolatedModules": true,
-      "resolveJsonModule": true,
-      "esModuleInterop": true,
-    },
-    
-    "include": ["src/**/*.ts"]
+    // Ensure that .d.ts files are created by tsc, but not .js files
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": ".",
+    "outDir": "build",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.json", "test/**/*.ts"]
 }

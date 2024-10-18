@@ -25,13 +25,13 @@ const processMessage: MessageProcessor = (
     message.content.startsWith(moduleCommandPrefix)
   ) {
     const command = message.content.substring(moduleCommandPrefix.length);
-    if (command == 'on') {
+    if (command === 'on') {
       enabled.set(message.channel.id, defaultExpireTime);
-      message.channel.send('Giphy AutoMod enabled.');
+      message.reply('Giphy AutoMod enabled.').catch(err => console.error(err));
       return true;
-    } else if (command == 'off') {
+    } else if (command === 'off') {
       enabled.delete(message.channel.id);
-      message.channel.send('Giphy AutoMod disabled.');
+      message.reply('Giphy AutoMod disabled.').catch(err => console.error(err));
       return true;
     } else if (command.startsWith(commandPrefixChangeTime)) {
       const newTime = parseInt(
@@ -40,7 +40,9 @@ const processMessage: MessageProcessor = (
       if (!Number.isNaN(newTime)) {
         enabled.set(message.channel.id, newTime);
       }
-      message.channel.send('Giphy AutoMod timer updated.');
+      message
+        .reply('Giphy AutoMod timer updated.')
+        .catch(err => console.error(err));
       return true;
     }
   }
@@ -63,8 +65,8 @@ export default processMessage;
  */
 function containsGiphyLink(message: Message): boolean {
   const pattern =
-    /https?:\/\/(\w+\.)?(tenor|giphy|gfycat)\.com\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*)/;
-  if (message.content.search(pattern) != -1) {
+    /https?:\/\/(\w+\.)?(tenor|giphy|gfycat)\.com\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/;
+  if (message.content.search(pattern) !== -1) {
     return true;
   }
 
@@ -81,10 +83,19 @@ function removeMessageEventually(message: Message, timeout: number) {
     'Giphy and Tenor links will be removed after a set time period.',
   );
   setTimeout(() => {
-    message.delete().then(() => {
-      notification.then(msg => {
-        msg.edit('A giphy/tenor link was here, but it was removed by AutoMod.');
-      });
-    });
+    message
+      .delete()
+      .then(() => {
+        notification
+          .then(msg => {
+            msg
+              .edit(
+                'A giphy/tenor link was here, but it was removed by AutoMod.',
+              )
+              .catch(err => console.error(err));
+          })
+          .catch(err => console.error(err));
+      })
+      .catch(err => console.error(err));
   }, timeout);
 }

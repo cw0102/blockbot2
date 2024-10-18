@@ -16,21 +16,31 @@ const kSingleMessage = '!blockify ';
  * @return {boolean} If this module consumed the message
  */
 const processMessage: MessageProcessor = (
-    payload: MessageProcessorPayload,
+  payload: MessageProcessorPayload,
 ): boolean => {
   const {config, message} = payload;
   if (config.adminIds.includes(message.author.id)) {
-    if (message.content == kAutoBlockifyOn) {
+    if (message.content === kAutoBlockifyOn) {
       enabled.add(message.channel.id);
-      message.delete().then((msg) => {
-        msg.channel.send(blockify('Blocked'));
-      });
+      message
+        .delete()
+        .then(msg => {
+          msg.channel
+            .send(blockify('Blocked'))
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
       return true;
-    } else if (message.content == kAutoBlockifyOff) {
+    } else if (message.content === kAutoBlockifyOff) {
       enabled.delete(message.channel.id);
-      message.delete().then((msg) => {
-        msg.channel.send(blockify('Unblocked'));
-      });
+      message
+        .delete()
+        .then(msg => {
+          msg.channel
+            .send(blockify('Unblocked'))
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
       return true;
     }
   }
@@ -44,16 +54,16 @@ const processMessage: MessageProcessor = (
 
   if (enabled.has(message.channel.id) || processSingleMessage) {
     message
-        .delete()
-        .then((msg) => {
-          const newMessage = `${msg.author}: ${
-          processSingleMessage ?
-            blockify(msg.content.slice(kSingleMessage.length)) :
-            blockify(msg.content)
-          }`;
-          message.channel.send(newMessage);
-        })
-        .catch(console.error);
+      .delete()
+      .then(msg => {
+        const newMessage = `${msg.author}: ${
+          processSingleMessage
+            ? blockify(msg.content.slice(kSingleMessage.length))
+            : blockify(msg.content)
+        }`;
+        message.channel.send(newMessage).catch(err => console.error(err));
+      })
+      .catch(console.error);
     return true;
   }
 
@@ -70,11 +80,11 @@ export default processMessage;
  * @return {boolean} Whether the text matches
  */
 function nextCharactersAre(
-    str: string,
-    position: number,
-    nextChars: string,
+  str: string,
+  position: number,
+  nextChars: string,
 ): boolean {
-  return str.slice(position, position + nextChars.length) == nextChars;
+  return str.slice(position, position + nextChars.length) === nextChars;
 }
 
 /**
@@ -96,8 +106,8 @@ function isAlpha(str: string): boolean {
 function findNextPattern(str: string, pos: number, pattern: string): string {
   const regExPattern = RegExp(`^${pattern}`);
   const result = regExPattern.exec(str.slice(pos));
-  if (result == null) {
-    return null;
+  if (result === null) {
+    return '';
   }
   return result[0];
 }
@@ -131,18 +141,18 @@ function getDiscordEmoji(str: string, pos: number): string {
  */
 function getEmoji(str: string, pos: number): string {
   return findNextPattern(
-      str,
-      pos,
-      '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c\ude32-\ude3a]|[\ud83c\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])',
+    str,
+    pos,
+    '(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c\ude32-\ude3a]|[\ud83c\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])',
   );
 }
 
 /**
  * Turn a text message into regional block letters
- * @param {*} text The text to blockify
+ * @param {string} text The text to blockify
  * @return {string} The blockified string
  */
-function blockify(text: any): string {
+function blockify(text: string): string {
   let out = '';
   let skip = 0;
   for (let pos = 0; pos < text.length; pos++) {
@@ -199,7 +209,7 @@ function blockify(text: any): string {
       }
     } else if (nextCharactersAre(text, pos, '<@')) {
       const idStr = getDiscordID(text, pos);
-      if (idStr != null) {
+      if (idStr) {
         out += idStr;
         skip = idStr.length;
       } else {
@@ -207,7 +217,7 @@ function blockify(text: any): string {
       }
     } else if (nextCharactersAre(text, pos, '<:')) {
       const customEmojiStr = getDiscordEmoji(text, pos);
-      if (customEmojiStr != null) {
+      if (customEmojiStr) {
         out += customEmojiStr;
         skip = customEmojiStr.length;
       } else {
@@ -253,7 +263,7 @@ function blockify(text: any): string {
           break;
         default: {
           const emoji = getEmoji(text, pos);
-          if (emoji != null) {
+          if (emoji !== null) {
             out += emoji;
             skip = emoji.length;
           } else {

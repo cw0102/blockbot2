@@ -14,19 +14,27 @@ const kWhenRaid = '!whenraid';
  * @return {boolean} If this module consumed the message
  */
 const processMessage: MessageProcessor = (
-    data: MessageProcessorPayload,
+  data: MessageProcessorPayload,
 ): boolean => {
   if (data.message.content === kWhendwalker) {
-    data.message.channel.send(timeStringUntilEndwalker());
+    data.message.channel
+      .send(timeStringUntilEndwalker())
+      .catch(err => console.error(err));
     return true;
   } else if (data.message.content === kWhenLegend) {
-    data.message.channel.send('Just a few more pulls...');
+    data.message.channel
+      .send('Just a few more pulls...')
+      .catch(err => console.error(err));
     return true;
   } else if (data.message.content === kWhenDawntrail) {
-    data.message.channel.send(timeStringUntilDawntrail());
+    data.message.channel
+      .send(timeStringUntilDawntrail())
+      .catch(err => console.error(err));
     return true;
   } else if (data.message.content === kWhenRaid) {
-    data.message.channel.send('Just need 8 people, should be easy right?');
+    data.message.channel
+      .send('Just need 8 people, should be easy right?')
+      .catch(err => console.error(err));
     return true;
   }
 
@@ -68,10 +76,10 @@ function printTimeUntil(text: string, date: Date) {
   const seconds = Math.floor(result / kSecondInMs);
 
   return `Time until ${text} (${date.toLocaleDateString()}): ${days} day${
-    days != 1 ? 's' : ''
-  } | ${hours} hour${hours != 1 ? 's' : ''} | ${minutes} minute${
-    minutes != 1 ? 's' : ''
-  } | ${seconds} second${seconds != 1 ? 's' : ''}`;
+    days !== 1 ? 's' : ''
+  } | ${hours} hour${hours !== 1 ? 's' : ''} | ${minutes} minute${
+    minutes !== 1 ? 's' : ''
+  } | ${seconds} second${seconds !== 1 ? 's' : ''}`;
 }
 
 /**

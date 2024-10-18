@@ -7,7 +7,11 @@
     "test": "jest",
     "build": "babel src -d dist --extensions \".ts\" --copy-files --no-copy-ignored",
     "generate-config-schema": "typescript-json-schema src/types/Config.ts FullConfig --required -o src/schema/config.schema.json",
-    "start": "npm run build && shx cp config.json dist/config.json && node dist/index.js"
+    "start": "npm run build && shx cp config.json dist/config.json && node dist/index.js",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "fix": "gts fix",
+    "posttest": "npm.cmd run lint"
   },
   "author": "",
   "license": "MIT",
@@ -25,7 +29,8 @@
     "shx": "^0.3.4",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.10.0",
-    "typescript-json-schema": "^0.63.0"
+    "typescript-json-schema": "^0.63.0",
+    "@types/node": "^22.7.5"
   },
   "dependencies": {
     "ajv": "^8.17.1",

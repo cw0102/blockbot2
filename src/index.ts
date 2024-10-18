@@ -1,11 +1,5 @@
-import type {
-  Message} from 'discord.js';
-import {
-  Client,
-  Events,
-  GatewayIntentBits,
-  TextChannel,
-} from 'discord.js';
+import type {Message, OmitPartialGroupDMChannel} from 'discord.js';
+import {Client, Events, GatewayIntentBits, TextChannel} from 'discord.js';
 
 import * as Plugins from './plugins';
 import type {MessageProcessor} from './types/MessageProcessor';
@@ -32,25 +26,28 @@ const client = new Client({
 });
 
 client
-    .once(Events.ClientReady, () => {
-      console.log('Ready!');
-      console.log(`Loaded ${modules.length} modules`);
-    })
+  .once(Events.ClientReady, () => {
+    console.log('Ready!');
+    console.log(`Loaded ${modules.length} modules`);
+  })
 
-    .on(Events.MessageCreate, (message: Message) => {
+  .on(
+    Events.MessageCreate,
+    (message: OmitPartialGroupDMChannel<Message<boolean>>) => {
       for (const runModule of modules) {
         if (runModule({message, config})) {
-          const channelTag = !(message.channel instanceof TextChannel) ?
-          `${message.channel.id}` :
-          `${message.channel.guild.name}#${message.channel.name}`;
+          const channelTag = !(message.channel instanceof TextChannel)
+            ? `${message.channel.id}`
+            : `${message.channel.guild.name}#${message.channel.name}`;
           console.log(
-              `[${channelTag}] ${message.author.username}#${message.author.discriminator} (${message.author.id}): ${message.content}`,
+            `[${channelTag}] ${message.author.username}#${message.author.discriminator} (${message.author.id}): ${message.content}`,
           );
           break;
         }
       }
-    });
+    },
+  );
 
-client.login(discordToken).catch((err) => {
+client.login(discordToken).catch(err => {
   console.log(`Login error: ${err}`);
 });
