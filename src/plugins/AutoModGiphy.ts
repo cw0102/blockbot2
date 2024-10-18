@@ -1,14 +1,14 @@
-import { Message } from "discord.js";
-import {
+import type {Message} from 'discord.js';
+import type {
   MessageProcessor,
   MessageProcessorPayload,
-} from "../types/MessageProcessor";
+} from '../types/MessageProcessor';
 
 const enabled = new Map();
 const defaultExpireTime = 300000;
-const moduleCommandPrefix = "!automod giphy ";
+const moduleCommandPrefix = '!automod giphy ';
 
-const commandPrefixChangeTime = "time ";
+const commandPrefixChangeTime = 'time ';
 
 /**
  * Automatically schedules giphy, tenor, and gfycat links for deletion
@@ -16,32 +16,31 @@ const commandPrefixChangeTime = "time ";
  * @param {MessageProcessorPayload} payload The message processor payload
  * @return {boolean} If this module consumed the message
  */
-/** */
 const processMessage: MessageProcessor = (
-  payload: MessageProcessorPayload
+  payload: MessageProcessorPayload,
 ): boolean => {
-  const { config, message } = payload;
+  const {config, message} = payload;
   if (
     config.adminIds.includes(message.author.id) &&
     message.content.startsWith(moduleCommandPrefix)
   ) {
     const command = message.content.substring(moduleCommandPrefix.length);
-    if (command == "on") {
+    if (command == 'on') {
       enabled.set(message.channel.id, defaultExpireTime);
-      message.channel.send("Giphy AutoMod enabled.");
+      message.channel.send('Giphy AutoMod enabled.');
       return true;
-    } else if (command == "off") {
+    } else if (command == 'off') {
       enabled.delete(message.channel.id);
-      message.channel.send("Giphy AutoMod disabled.");
+      message.channel.send('Giphy AutoMod disabled.');
       return true;
     } else if (command.startsWith(commandPrefixChangeTime)) {
       const newTime = parseInt(
-        command.substring(commandPrefixChangeTime.length)
+        command.substring(commandPrefixChangeTime.length),
       );
       if (!Number.isNaN(newTime)) {
         enabled.set(message.channel.id, newTime);
       }
-      message.channel.send("Giphy AutoMod timer updated.");
+      message.channel.send('Giphy AutoMod timer updated.');
       return true;
     }
   }
@@ -79,12 +78,12 @@ function containsGiphyLink(message: Message): boolean {
  */
 function removeMessageEventually(message: Message, timeout: number) {
   const notification = message.reply(
-    "Giphy and Tenor links will be removed after a set time period."
+    'Giphy and Tenor links will be removed after a set time period.',
   );
   setTimeout(() => {
     message.delete().then(() => {
-      notification.then((msg) => {
-        msg.edit("A giphy/tenor link was here, but it was removed by AutoMod.");
+      notification.then(msg => {
+        msg.edit('A giphy/tenor link was here, but it was removed by AutoMod.');
       });
     });
   }, timeout);

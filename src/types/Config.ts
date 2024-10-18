@@ -2,7 +2,7 @@ export interface FullConfig {
   /**
    * Discord Bot Admin User IDs
    */
-  adminIds: Array<string>;
+  adminIds: string[];
 
   /**
    * The Discord bot token
@@ -10,4 +10,4 @@ export interface FullConfig {
   discordToken: string;
 }
 
-export type Config = Omit<FullConfig, "discordToken">;
+export type Config = Omit<FullConfig, 'discordToken'>;
