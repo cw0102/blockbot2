@@ -9,6 +9,27 @@ const kAutoBlockifyOn = '!autoblockify on';
 const kAutoBlockifyOff = '!autoblockify off';
 const kSingleMessage = '!blockify ';
 
+const kReplaceText: Record<string, string> = {
+  'up!': ':up:',
+  cool: ':cool',
+  free: ':free:',
+  back: ':back:',
+  'on!': ':on:',
+  top: ':top:',
+  soon: ':soon:',
+  end: ':end:',
+  new: ':new:',
+  atm: ':atm:',
+  sos: ':sos:',
+  usa: ':flag_us:',
+  mandy: ':mandymoore:',
+};
+
+interface ReplaceTextResult {
+  result: string;
+  skip: number;
+}
+
 /**
  * Performs blockify commands to turn on/off blockify and blockifys messages
  * when the module is enabled.
@@ -71,6 +92,25 @@ const processMessage: MessageProcessor = (
 };
 
 export default processMessage;
+
+/**
+ * Replace certain text strings with a single emoji
+ * @param {string} str The string to search
+ * @param {number} position The 0-indexed position in the string to start at
+ * @returns {ReplaceTextResult | null} An object containing the result, if found, else null
+ */
+function replaceTextEmoji(
+  str: string,
+  position: number,
+): ReplaceTextResult | null {
+  for (const key in kReplaceText) {
+    if (nextCharactersAre(str, position, key)) {
+      const replacement = kReplaceText[key];
+      return {result: replacement, skip: key.length - 1};
+    }
+  }
+  return null;
+}
 
 /**
  * Checks if the characters following `str[position]` are equal to `nextChars`
@@ -165,45 +205,10 @@ function blockify(text: string): string {
     const char = text[pos];
 
     if (isAlpha(char)) {
-      if (nextCharactersAre(text, pos, 'up!')) {
-        out += ':up:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'cool')) {
-        out += ':cool:';
-        skip = 3;
-      } else if (nextCharactersAre(text, pos, 'free')) {
-        out += ':free:';
-        skip = 3;
-      } else if (nextCharactersAre(text, pos, 'back')) {
-        out += ':back:';
-        skip = 3;
-      } else if (nextCharactersAre(text, pos, 'on!')) {
-        out += ':on:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'top')) {
-        out += ':top:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'soon')) {
-        out += ':soon:';
-        skip = 3;
-      } else if (nextCharactersAre(text, pos, 'end')) {
-        out += ':end:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'new')) {
-        out += ':new:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'atm')) {
-        out += ':atm:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'sos')) {
-        out += ':sos:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'usa')) {
-        out += ':flag_us:';
-        skip = 2;
-      } else if (nextCharactersAre(text, pos, 'mandy')) {
-        out += ':mandymoore:';
-        skip = 4;
+      const replaceTextResult = replaceTextEmoji(text, pos);
+      if (replaceTextResult !== null) {
+        out += replaceTextResult.result;
+        skip = replaceTextResult.skip;
       } else {
         out += `:regional_indicator_${char.toLowerCase()}:`;
       }
