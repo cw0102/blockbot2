@@ -23,6 +23,18 @@ const kReplaceText: Record<string, string> = {
   sos: ':sos:',
   usa: ':flag_us:',
   mandy: ':mandymoore:',
+  '0': ':zero:',
+  '1': ':one:',
+  '2': ':two:',
+  '3': ':three:',
+  '4': ':four:',
+  '5': ':five:',
+  '6': ':six:',
+  '7': ':seven:',
+  '8': ':eight:',
+  '9': ':nine:',
+  '?': ':question:',
+  '!': ':exclamation:',
 };
 
 interface ReplaceTextResult {
@@ -204,14 +216,12 @@ function blockify(text: string): string {
 
     const char = text[pos];
 
-    if (isAlpha(char)) {
-      const replaceTextResult = replaceTextEmoji(text, pos);
-      if (replaceTextResult !== null) {
-        out += replaceTextResult.result;
-        skip = replaceTextResult.skip;
-      } else {
-        out += `:regional_indicator_${char.toLowerCase()}:`;
-      }
+    const replaceTextResult = replaceTextEmoji(text, pos);
+    if (replaceTextResult !== null) {
+      out += replaceTextResult.result;
+      skip = replaceTextResult.skip;
+    } else if (isAlpha(char)) {
+      out += `:regional_indicator_${char.toLowerCase()}:`;
     } else if (nextCharactersAre(text, pos, '<@')) {
       const idStr = getDiscordID(text, pos);
       if (idStr) {
@@ -229,52 +239,12 @@ function blockify(text: string): string {
         out += char;
       }
     } else {
-      switch (char) {
-        case '0':
-          out += ':zero:';
-          break;
-        case '1':
-          out += ':one:';
-          break;
-        case '2':
-          out += ':two:';
-          break;
-        case '3':
-          out += ':three:';
-          break;
-        case '4':
-          out += ':four:';
-          break;
-        case '5':
-          out += ':five:';
-          break;
-        case '6':
-          out += ':six:';
-          break;
-        case '7':
-          out += ':seven:';
-          break;
-        case '8':
-          out += ':eight:';
-          break;
-        case '9':
-          out += ':nine:';
-          break;
-        case '?':
-          out += ':question:';
-          break;
-        case '!':
-          out += ':exclamation:';
-          break;
-        default: {
-          const emoji = getEmoji(text, pos);
-          if (emoji !== null) {
-            out += emoji;
-            skip = emoji.length;
-          } else {
-            out += char;
-          }
-        }
+      const emoji = getEmoji(text, pos);
+      if (emoji !== null) {
+        out += emoji;
+        skip = emoji.length;
+      } else {
+        out += char;
       }
     }
 
